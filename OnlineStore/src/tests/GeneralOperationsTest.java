@@ -37,6 +37,7 @@ public class GeneralOperationsTest {
     @Test
     public void general(){
         Calendar time = Calendar.getInstance();
+        time.clear();
         time.set(2018, Calendar.JANUARY, 1);
         generalOperations.setInitialTime(time);
 
@@ -46,6 +47,7 @@ public class GeneralOperationsTest {
         generalOperations.time(40);
         currentTime = generalOperations.getCurrentTime();
         Calendar newTime = Calendar.getInstance();
+        newTime.clear();
         newTime.set(2018, Calendar.FEBRUARY, 10);
         Assert.assertEquals(currentTime, newTime);
     }

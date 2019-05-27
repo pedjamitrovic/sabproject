@@ -1,15 +1,21 @@
 import operations.*;
 import org.junit.Test;
+import student.mp150608_CityOperations;
 import tests.TestHandler;
 import tests.TestRunner;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 public class StudentMain {
+    public static String connectionUrl = "jdbc:sqlserver://localhost:1433;databaseName=DomaciSAB;user=pedja;password=";
 
     public static void main(String[] args) {
 
-        ArticleOperations articleOperations = null; // Change this for your implementation (points will be negative if interfaces are not implemented).
+        ArticleOperations articleOperations = null;
         BuyerOperations buyerOperations = null;
-        CityOperations cityOperations = null;
+        CityOperations cityOperations = new mp150608_CityOperations();
         GeneralOperations generalOperations = null;
         OrderOperations orderOperations = null;
         ShopOperations shopOperations = null;
@@ -25,6 +31,6 @@ public class StudentMain {
                 transactionOperations
         );
 
-        TestRunner.runTests();
+        //TestRunner.runTests();
     }
 }

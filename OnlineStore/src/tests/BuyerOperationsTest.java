@@ -62,7 +62,7 @@ public class BuyerOperationsTest {
     }
 
     @Test
-    void credit(){
+    public void credit(){
         int cityId = cityOperations.createCity("Kragujevac");
         int buyerId = buyerOperations.createBuyer("Pera", cityId);
 
@@ -79,7 +79,7 @@ public class BuyerOperationsTest {
     }
 
     @Test
-    void orders(){
+    public void orders(){
         int cityId = cityOperations.createCity("Kragujevac");
         int buyerId = buyerOperations.createBuyer("Pera", cityId);
 

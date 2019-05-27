@@ -49,7 +49,7 @@ public interface OrderOperations {
      * @param orderId order id
      * @return total discount, -1 if failure or if order is not completed
      */
-    float getDiscountSum(int orderId);
+    BigDecimal getDiscountSum(int orderId);
 
     /**
      * Gets state of the order.

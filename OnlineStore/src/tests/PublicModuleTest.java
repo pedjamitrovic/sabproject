@@ -57,9 +57,11 @@ public class PublicModuleTest {
     @Test
     public void test(){
         Calendar initialTime = Calendar.getInstance();
+        initialTime.clear();
         initialTime.set(2018, Calendar.JANUARY, 1);
         generalOperations.setInitialTime(initialTime);
         Calendar receivedTime = Calendar.getInstance();
+        receivedTime.clear();
         receivedTime.set(2018, Calendar.JANUARY, 22);
 
         //make network
@@ -99,6 +101,7 @@ public class PublicModuleTest {
         shopOperations.increaseArticleCount(sto, 10);
 
         int buyer = buyerOperations.createBuyer("kupac", cityB);
+        buyerOperations.increaseCredit(buyer, new BigDecimal("20000"));
         int order = buyerOperations.createOrder(buyer);
 
         orderOperations.addArticle(order, laptop, 5);
@@ -118,9 +121,9 @@ public class PublicModuleTest {
 
         //calculate ammounts - begin
         BigDecimal shopAAmount = new BigDecimal("5").multiply(new BigDecimal("1000")).setScale(3);
-        BigDecimal shopAAmountWithDiscount = new BigDecimal(0.8).multiply(shopAAmount).setScale(3);
+        BigDecimal shopAAmountWithDiscount = new BigDecimal("0.8").multiply(shopAAmount).setScale(3);
         BigDecimal shopC2Amount = new BigDecimal("4").multiply(new BigDecimal("200")).setScale(3);
-        BigDecimal shopC2AmountWithDiscount = new BigDecimal(0.5).multiply(shopC2Amount).setScale(3);
+        BigDecimal shopC2AmountWithDiscount = new BigDecimal("0.5").multiply(shopC2Amount).setScale(3);
         BigDecimal shopC3Amount = (new BigDecimal("10").multiply(new BigDecimal("100")))
                 .add(new BigDecimal("4").multiply(new BigDecimal("200"))).setScale(3);
         BigDecimal shopC3AmountWithDiscount = shopC3Amount;
@@ -151,7 +154,7 @@ public class PublicModuleTest {
         generalOperations.time(9);
         Assert.assertEquals(orderOperations.getLocation(order), cityA);
 
-        generalOperations.time(7);
+        generalOperations.time(8);
         Assert.assertEquals(orderOperations.getLocation(order), cityC5);
 
         generalOperations.time(5);
