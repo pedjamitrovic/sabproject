@@ -95,7 +95,7 @@ public class mp150608_CityOperations implements CityOperations {
     @Override
     public List<Integer> getShops(int cityId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("select ID from SHOP where CITY_ID = ?");
+            PreparedStatement ps = c.prepareStatement("select * from SHOP where CITY_ID = ?");
             ps.setInt(1, cityId);
             ResultSet rs = ps.executeQuery();
             List<Integer> cities = new LinkedList<>();
