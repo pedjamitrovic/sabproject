@@ -1,6 +1,6 @@
 import operations.*;
 import org.junit.Test;
-import student.mp150608_CityOperations;
+import student.*;
 import tests.TestHandler;
 import tests.TestRunner;
 
@@ -13,13 +13,13 @@ public class StudentMain {
 
     public static void main(String[] args) {
 
-        ArticleOperations articleOperations = null;
-        BuyerOperations buyerOperations = null;
+        ArticleOperations articleOperations = new mp150608_ArticleOperations();
+        BuyerOperations buyerOperations = new mp150608_BuyerOperations();
         CityOperations cityOperations = new mp150608_CityOperations();
-        GeneralOperations generalOperations = null;
-        OrderOperations orderOperations = null;
-        ShopOperations shopOperations = null;
-        TransactionOperations transactionOperations = null;
+        GeneralOperations generalOperations = new mp150608_GeneralOperations();
+        OrderOperations orderOperations = new mp150608_OrderOperations();
+        ShopOperations shopOperations = new mp150608_ShopOperations();
+        TransactionOperations transactionOperations = new mp150608_TransactionOperations();
 
         TestHandler.createInstance(
                 articleOperations,
