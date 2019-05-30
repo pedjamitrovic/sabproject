@@ -27,7 +27,7 @@ public class mp150608_GeneralOperations implements GeneralOperations {
                 GregorianCalendar calendar = new GregorianCalendar();
                 calendar.setTime(rs.getDate("CURRENT_DATE"));
                 calendar.add(Calendar.DATE, days);
-                
+
                 ps = c.prepareStatement("update SYSTEM set CURRENT_DATE = ?");
                 ps.setDate(1, new java.sql.Date(calendar.getTimeInMillis()));
                 ps.executeUpdate();
