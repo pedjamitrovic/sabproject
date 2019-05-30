@@ -31,6 +31,6 @@ public class StudentMain {
                 transactionOperations
         );
 
-        //TestRunner.runTests();
+        TestRunner.runTests();
     }
 }

@@ -22,15 +22,14 @@ public class mp150608_ShopOperations implements ShopOperations {
             rs = ps.executeQuery();
             if (rs.next()) return -1;
 
-            String[] generatedColumns = { "ID" };
-            ps = c.prepareStatement("insert into SHOP values(?, ?, ?, ?)", generatedColumns);
+            ps = c.prepareStatement("insert into SHOP values(?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, name);
             ps.setInt(2, 0);
             ps.setInt(3, cityId);
             ps.setInt(4, 0);
             if (ps.executeUpdate() == 0) return -1;
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                if (generatedKeys.next()) return generatedKeys.getInt("ID");
+                if (generatedKeys.next()) return generatedKeys.getInt(1);
                 else return -1;
             }
         } catch (SQLException e) {
@@ -129,12 +128,12 @@ public class mp150608_ShopOperations implements ShopOperations {
     @Override
     public List<Integer> getArticles(int shopId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("select * from ARTICLES where SHOP_ID = ?");
+            PreparedStatement ps = c.prepareStatement("select * from ARTICLE where SHOP_ID = ?");
             ps.setInt(1, shopId);
             ResultSet rs = ps.executeQuery();
             List<Integer> articles = new LinkedList<>();
             while(rs.next()){
-                articles.add(rs.getInt("CITY_ID1"));
+                articles.add(rs.getInt("ID"));
             }
             return articles;
         } catch (SQLException e) {

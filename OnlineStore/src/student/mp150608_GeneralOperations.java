@@ -28,7 +28,7 @@ public class mp150608_GeneralOperations implements GeneralOperations {
                 calendar.setTime(rs.getDate("CURRENT_DATE"));
                 calendar.add(Calendar.DATE, days);
 
-                ps = c.prepareStatement("update SYSTEM set CURRENT_DATE = ?");
+                ps = c.prepareStatement("update SYSTEM set [CURRENT_DATE] = ?");
                 ps.setDate(1, new java.sql.Date(calendar.getTimeInMillis()));
                 ps.executeUpdate();
                 return calendar;
@@ -58,8 +58,8 @@ public class mp150608_GeneralOperations implements GeneralOperations {
     @Override
     public void eraseAll() {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("delete from SYSTEM");
-            ps.executeUpdate();
+            CallableStatement cs = c.prepareCall("{call SP_TRUNCATE_ALL_TABLES}");
+            cs.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }

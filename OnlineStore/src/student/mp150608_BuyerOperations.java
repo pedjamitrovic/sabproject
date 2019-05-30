@@ -11,14 +11,13 @@ public class mp150608_BuyerOperations implements BuyerOperations {
     @Override
     public int createBuyer(String name, int cityId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            String[] generatedColumns = { "ID" };
-            PreparedStatement ps = c.prepareStatement("insert into BUYER values(?, ?, ?)", generatedColumns);
+            PreparedStatement ps = c.prepareStatement("insert into BUYER values(?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, name);
             ps.setInt(2, 0);
             ps.setInt(3, cityId);
             if (ps.executeUpdate() == 0) return -1;
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                if (generatedKeys.next()) return generatedKeys.getInt("ID");
+                if (generatedKeys.next()) return generatedKeys.getInt(1);
                 else return -1;
             }
         } catch (SQLException e) {
@@ -80,14 +79,13 @@ public class mp150608_BuyerOperations implements BuyerOperations {
     @Override
     public int createOrder(int buyerId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            String[] generatedColumns = { "ID" };
-            PreparedStatement ps = c.prepareStatement("insert into ORDER values(?, ?, ?)", generatedColumns);
+            PreparedStatement ps = c.prepareStatement("insert into ORDER values(?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, "created");
-            //ps.setInt(2, 0); trenutni datum
+            ps.setDate(2, Date.valueOf("01/01/2000"));
             ps.setInt(3, buyerId);
             if (ps.executeUpdate() == 0) return -1;
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                if (generatedKeys.next()) return generatedKeys.getInt("ID");
+                if (generatedKeys.next()) return generatedKeys.getInt(1);
                 else return -1;
             }
         } catch (SQLException e) {

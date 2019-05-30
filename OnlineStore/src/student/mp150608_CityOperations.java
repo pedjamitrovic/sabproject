@@ -16,12 +16,11 @@ public class mp150608_CityOperations implements CityOperations {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return -1;
 
-            String[] generatedColumns = { "ID" };
-            ps = c.prepareStatement("insert into CITY values(?)", generatedColumns);
+            ps = c.prepareStatement("insert into CITY values(?)", Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, name);
             if (ps.executeUpdate() == 0) return -1;
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                if (generatedKeys.next()) return generatedKeys.getInt("ID");
+                if (generatedKeys.next()) return generatedKeys.getInt(1);
                 else return -1;
             }
         } catch (SQLException e) {
@@ -57,14 +56,13 @@ public class mp150608_CityOperations implements CityOperations {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return -1;
 
-            String[] generatedColumns = { "ID" };
-            ps = c.prepareStatement("insert into LINE values(?, ?, ?)", generatedColumns);
+            ps = c.prepareStatement("insert into LINE values(?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, cityId1);
             ps.setInt(2, cityId2);
             ps.setInt(3, distance);
             if (ps.executeUpdate() == 0) return -1;
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                if (generatedKeys.next()) return generatedKeys.getInt("ID");
+                if (generatedKeys.next()) return generatedKeys.getInt(1);
                 else return -1;
             }
         } catch (SQLException e) {
@@ -98,12 +96,11 @@ public class mp150608_CityOperations implements CityOperations {
             PreparedStatement ps = c.prepareStatement("select * from SHOP where CITY_ID = ?");
             ps.setInt(1, cityId);
             ResultSet rs = ps.executeQuery();
-            List<Integer> cities = new LinkedList<>();
+            List<Integer> shops = new LinkedList<>();
             while(rs.next()){
-                if(rs.getInt("CITY_ID1") == cityId) cities.add(rs.getInt("CITY_ID2"));
-                else cities.add(rs.getInt("CITY_ID1"));
+                shops.add(rs.getInt("ID"));
             }
-            return cities;
+            return shops;
         } catch (SQLException e) {
             e.printStackTrace();
         }
