@@ -14,7 +14,7 @@ public class mp150608_OrderOperations implements OrderOperations {
     public int addArticle(int orderId, int articleId, int count) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
             int articleQuantity = -1;
-            PreparedStatement ps = c.prepareStatement("select * from ARTICLE where ID = ?");
+            PreparedStatement ps = c.prepareStatement("select * from ARTICLE where ID = ?", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             ps.setInt(1, articleId);
             ResultSet rsArticle = ps.executeQuery();
             if (!rsArticle.next()) return -1;
@@ -22,13 +22,12 @@ public class mp150608_OrderOperations implements OrderOperations {
                 articleQuantity = rsArticle.getInt("QUANTITY");
                 if(articleQuantity < count) return -1;
             }
-            ps = c.prepareStatement("select * from ORDER_ITEM where ORDER_ID = ? and ARTICLE_ID = ?", ResultSet.CONCUR_UPDATABLE);
+            ps = c.prepareStatement("select * from ORDER_ITEM where ORDER_ID = ? and ARTICLE_ID = ?", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             ps.setInt(1, orderId);
             ps.setInt(2, articleId);
             ResultSet rsOrderItem = ps.executeQuery();
             if(!rsOrderItem.next()){
-                String[] generatedColumns = { "ID" };
-                ps = c.prepareStatement("insert into ORDER_ITEM values(?,?,?)", generatedColumns);
+                ps = c.prepareStatement("insert into ORDER_ITEM values(?,?,?)", Statement.RETURN_GENERATED_KEYS);
                 ps.setInt(1, orderId);
                 ps.setInt(2, articleId);
                 ps.setInt(3, count);
@@ -36,7 +35,7 @@ public class mp150608_OrderOperations implements OrderOperations {
                 rsArticle.updateInt("QUANTITY", articleQuantity - count);
                 rsArticle.updateRow();
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                    if (generatedKeys.next()) return generatedKeys.getInt("ID");
+                    if (generatedKeys.next()) return generatedKeys.getInt(1);
                     else return -1;
                 }
             }
@@ -87,7 +86,7 @@ public class mp150608_OrderOperations implements OrderOperations {
     @Override
     public int completeOrder(int orderId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("update ORDER set STATE = ? where ID = ?");
+            PreparedStatement ps = c.prepareStatement("update [ORDER] set STATE = ? where ID = ?");
             ps.setString(1, "sent");
             ps.setInt(2, orderId);
             if (ps.executeUpdate() == 0) return -1;
@@ -129,7 +128,7 @@ public class mp150608_OrderOperations implements OrderOperations {
     @Override
     public String getState(int orderId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("select * from ORDER where ID = ?");
+            PreparedStatement ps = c.prepareStatement("select * from [ORDER] where ID = ?");
             ps.setInt(1, orderId);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) return null;
@@ -148,9 +147,13 @@ public class mp150608_OrderOperations implements OrderOperations {
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) return null;
             else {
-                GregorianCalendar calendar = new GregorianCalendar();
-                calendar.setTime(rs.getDate("SENT_TIME"));
-                return calendar;
+                Date sentTime = rs.getDate("SENT_TIME");
+                if (sentTime == null) return null;
+                else {
+                    GregorianCalendar calendar = new GregorianCalendar();
+                    calendar.setTime(sentTime);
+                    return calendar;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
