@@ -79,10 +79,11 @@ public class mp150608_BuyerOperations implements BuyerOperations {
     @Override
     public int createOrder(int buyerId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("insert into ORDER values(?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = c.prepareStatement("insert into [ORDER] values(?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, "created");
-            ps.setDate(2, Date.valueOf("01/01/2000"));
-            ps.setInt(3, buyerId);
+            ps.setDate(2, null);
+            ps.setDate(3, null);
+            ps.setInt(4, buyerId);
             if (ps.executeUpdate() == 0) return -1;
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) return generatedKeys.getInt(1);
@@ -97,7 +98,7 @@ public class mp150608_BuyerOperations implements BuyerOperations {
     @Override
     public List<Integer> getOrders(int buyerId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("select * from ORDER where BUYER_ID = ?");
+            PreparedStatement ps = c.prepareStatement("select * from [ORDER] where BUYER_ID = ?");
             ps.setInt(1, buyerId);
             ResultSet rs = ps.executeQuery();
             List<Integer> orders = new LinkedList<>();
@@ -118,8 +119,7 @@ public class mp150608_BuyerOperations implements BuyerOperations {
             ps.setInt(1, buyerId);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) return null;
-            else return rs.getBigDecimal("CREDIT");
-
+            else return Settings.fixBigDecimal(rs.getBigDecimal("CREDIT"));
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -100,11 +100,29 @@ public class mp150608_OrderOperations implements OrderOperations {
 
     @Override
     public BigDecimal getFinalPrice(int orderId) {
+        try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
+            CallableStatement cs = c.prepareCall("{call SP_FINAL_PRICE(?, ?)}");
+            cs.setInt(1, orderId);
+            cs.registerOutParameter(2, Types.DECIMAL);
+            cs.execute();
+            return cs.getBigDecimal(2);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
     @Override
     public BigDecimal getDiscountSum(int orderId) {
+        try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
+            CallableStatement cs = c.prepareCall("{call SP_DISCOUNT_SUM(?, ?)}");
+            cs.setInt(1, orderId);
+            cs.registerOutParameter(2, Types.DECIMAL);
+            cs.execute();
+            return cs.getBigDecimal(2);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -125,7 +143,7 @@ public class mp150608_OrderOperations implements OrderOperations {
     @Override
     public Calendar getSentTime(int orderId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("select * from ORDER where ID = ?");
+            PreparedStatement ps = c.prepareStatement("select * from [ORDER] where ID = ?");
             ps.setInt(1, orderId);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) return null;
@@ -143,7 +161,7 @@ public class mp150608_OrderOperations implements OrderOperations {
     @Override
     public Calendar getRecievedTime(int orderId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("select * from ORDER where ID = ?");
+            PreparedStatement ps = c.prepareStatement("select * from [ORDER] where ID = ?");
             ps.setInt(1, orderId);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) return null;
@@ -161,7 +179,7 @@ public class mp150608_OrderOperations implements OrderOperations {
     @Override
     public int getBuyer(int orderId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("select * from ORDER where ID = ?");
+            PreparedStatement ps = c.prepareStatement("select * from [ORDER] where ID = ?");
             ps.setInt(1, orderId);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) return -1;
