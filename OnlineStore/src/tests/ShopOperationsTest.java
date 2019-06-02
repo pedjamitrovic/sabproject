@@ -82,7 +82,7 @@ public class ShopOperationsTest {
 
         shopOperations.increaseArticleCount(articleId, 5);
         shopOperations.increaseArticleCount(articleId, 2);
-        int articleCount = shopOperations.getArticleCount(shopId, articleId);
+        int articleCount = shopOperations.getArticleCount(articleId);
         Assert.assertEquals(7, articleCount);
 
         List<Integer> articles = shopOperations.getArticles(shopId);

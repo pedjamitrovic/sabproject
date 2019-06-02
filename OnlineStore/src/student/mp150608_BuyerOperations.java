@@ -119,7 +119,7 @@ public class mp150608_BuyerOperations implements BuyerOperations {
             ps.setInt(1, buyerId);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) return null;
-            else return Settings.fixBigDecimal(rs.getBigDecimal("CREDIT"));
+            else return rs.getBigDecimal("CREDIT");
         } catch (SQLException e) {
             e.printStackTrace();
         }

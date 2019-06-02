@@ -110,12 +110,11 @@ public class mp150608_ShopOperations implements ShopOperations {
     }
 
     @Override
-    public int getArticleCount(int shopId, int articleId) {
+    public int getArticleCount(int articleId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
             int quantity = -1;
-            PreparedStatement ps = c.prepareStatement("select * from ARTICLE where ID = ? AND SHOP_ID = ?");
+            PreparedStatement ps = c.prepareStatement("select * from ARTICLE where ID = ?");
             ps.setInt(1, articleId);
-            ps.setInt(2, shopId);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) return -1;
             else return rs.getInt("QUANTITY");

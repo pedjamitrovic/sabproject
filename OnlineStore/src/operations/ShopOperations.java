@@ -45,11 +45,10 @@ public interface ShopOperations {
 
     /**
      * Gets count og articles in shop.
-     * @param shopId id of the shop
      * @param articleId id of the article
      * @return number of articles in shop
      */
-    int getArticleCount(int shopId, int articleId);
+    int getArticleCount(int articleId);
 
     /**
      * Gets all articles.

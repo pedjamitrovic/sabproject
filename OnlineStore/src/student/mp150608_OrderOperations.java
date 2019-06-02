@@ -172,7 +172,7 @@ public class mp150608_OrderOperations implements OrderOperations {
             cs.setInt(1, orderId);
             cs.registerOutParameter(2, Types.DECIMAL);
             cs.execute();
-            return cs.getBigDecimal(2);
+            return cs.getBigDecimal(2).setScale(3);
         } catch (SQLException e) {
             e.printStackTrace();
         }

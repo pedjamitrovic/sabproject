@@ -13,15 +13,17 @@ public class mp150608_TransactionOperations implements TransactionOperations {
     @Override
     public BigDecimal getBuyerTransactionsAmmount(int buyerId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
+            boolean atLeastOneTransactionFound = false;
             PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where SENDER = ? and [TYPE] = ?");
             ps.setInt(1, buyerId);
             ps.setInt(2, 1);
             ResultSet rs = ps.executeQuery();
-            BigDecimal sum = new BigDecimal(0);
+            BigDecimal sum = new BigDecimal(0).setScale(3);
             while(rs.next()){
-                sum.add(rs.getBigDecimal("AMOUNT"));
+                atLeastOneTransactionFound = true;
+                sum = sum.add(rs.getBigDecimal("AMOUNT").setScale(3));
             }
-            return sum;
+            if (atLeastOneTransactionFound) return sum;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -31,15 +33,17 @@ public class mp150608_TransactionOperations implements TransactionOperations {
     @Override
     public BigDecimal getShopTransactionsAmmount(int shopId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
+            boolean atLeastOneTransactionFound = false;
             PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where RECEIVER = ? and [TYPE] = ?");
             ps.setInt(1, shopId);
             ps.setInt(2, 2);
             ResultSet rs = ps.executeQuery();
-            BigDecimal sum = new BigDecimal(0);
+            BigDecimal sum = new BigDecimal(0).setScale(3);
             while(rs.next()){
-                sum.add(rs.getBigDecimal("AMOUNT"));
+                atLeastOneTransactionFound = true;
+                sum = sum.add(rs.getBigDecimal("AMOUNT").setScale(3));
             }
-            return sum;
+            if (atLeastOneTransactionFound) return sum;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -57,7 +61,7 @@ public class mp150608_TransactionOperations implements TransactionOperations {
             while(rs.next()){
                 transactions.add(rs.getInt("ID"));
             }
-            return transactions;
+            if(transactions.size() > 0) return transactions;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -73,7 +77,6 @@ public class mp150608_TransactionOperations implements TransactionOperations {
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) return -1;
             else return rs.getInt("ID");
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -108,7 +111,7 @@ public class mp150608_TransactionOperations implements TransactionOperations {
             while(rs.next()){
                 transactions.add(rs.getInt("ID"));
             }
-            return transactions;
+            if(transactions.size() > 0) return transactions;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -145,7 +148,7 @@ public class mp150608_TransactionOperations implements TransactionOperations {
             ps.setInt(2, 1);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) return null;
-            else return rs.getBigDecimal("AMOUNT");
+            else return rs.getBigDecimal("AMOUNT").setScale(3);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -156,21 +159,18 @@ public class mp150608_TransactionOperations implements TransactionOperations {
     @Override
     public BigDecimal getAmmountThatShopRecievedForOrder(int shopId, int orderId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
+            boolean atLeastOneTransactionFound = false;
             PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where ORDER_ID = ? and RECEIVER = ? and [TYPE] = ?");
             ps.setInt(1, orderId);
             ps.setInt(2, shopId);
             ps.setInt(3, 2);
             ResultSet rs = ps.executeQuery();
-            if (!rs.next()) return null;
-            LinkedList<Integer> transactions = new LinkedList<>();
+            BigDecimal sum = new BigDecimal(0).setScale(3);
             while(rs.next()){
-                transactions.add(rs.getInt("ID"));
+                atLeastOneTransactionFound = true;
+                sum.add(rs.getBigDecimal("AMOUNT").setScale(3));
             }
-            BigDecimal sum = new BigDecimal(0);
-            while(rs.next()){
-                sum.add(rs.getBigDecimal("AMOUNT"));
-            }
-            return sum;
+            if(atLeastOneTransactionFound) return sum;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -184,8 +184,7 @@ public class mp150608_TransactionOperations implements TransactionOperations {
             ps.setInt(1, transactionId);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) return null;
-            else return rs.getBigDecimal("AMOUNT");
-
+            else return rs.getBigDecimal("AMOUNT").setScale(3);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -198,7 +197,7 @@ public class mp150608_TransactionOperations implements TransactionOperations {
             CallableStatement cs = c.prepareCall("{? = call CALC_SYSTEM_PROFIT()}");
             cs.registerOutParameter(1, Types.DECIMAL);
             cs.execute();
-            return cs.getBigDecimal(1);
+            return cs.getBigDecimal(1).setScale(3);
         } catch (SQLException e) {
             e.printStackTrace();
         }
