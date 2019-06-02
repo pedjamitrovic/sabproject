@@ -13,7 +13,7 @@ public class mp150608_TransactionOperations implements TransactionOperations {
     @Override
     public BigDecimal getBuyerTransactionsAmmount(int buyerId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where SENDER = ? and TYPE = ?");
+            PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where SENDER = ? and [TYPE] = ?");
             ps.setInt(1, buyerId);
             ps.setInt(2, 1);
             ResultSet rs = ps.executeQuery();
@@ -31,7 +31,7 @@ public class mp150608_TransactionOperations implements TransactionOperations {
     @Override
     public BigDecimal getShopTransactionsAmmount(int shopId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where RECEIVER = ? and TYPE = ?");
+            PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where RECEIVER = ? and [TYPE] = ?");
             ps.setInt(1, shopId);
             ps.setInt(2, 2);
             ResultSet rs = ps.executeQuery();
@@ -49,7 +49,7 @@ public class mp150608_TransactionOperations implements TransactionOperations {
     @Override
     public List<Integer> getTransationsForBuyer(int buyerId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where SENDER = ? and TYPE = ?");
+            PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where SENDER = ? and [TYPE] = ?");
             ps.setInt(1, buyerId);
             ps.setInt(2, 1);
             ResultSet rs = ps.executeQuery();
@@ -67,7 +67,7 @@ public class mp150608_TransactionOperations implements TransactionOperations {
     @Override
     public int getTransactionForBuyersOrder(int orderId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where ORDER_ID = ? and TYPE = ?");
+            PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where ORDER_ID = ? and [TYPE] = ?");
             ps.setInt(1, orderId);
             ps.setInt(2, 1);
             ResultSet rs = ps.executeQuery();
@@ -83,7 +83,7 @@ public class mp150608_TransactionOperations implements TransactionOperations {
     @Override
     public int getTransactionForShopAndOrder(int orderId, int shopId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where ORDER_ID = ? and RECEIVER = ? and TYPE = ?");
+            PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where ORDER_ID = ? and RECEIVER = ? and [TYPE] = ?");
             ps.setInt(1, orderId);
             ps.setInt(2, shopId);
             ps.setInt(3, 2);
@@ -100,7 +100,7 @@ public class mp150608_TransactionOperations implements TransactionOperations {
     @Override
     public List<Integer> getTransationsForShop(int shopId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where and RECEIVER = ? and TYPE = ?");
+            PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where RECEIVER = ? and [TYPE] = ?");
             ps.setInt(1, shopId);
             ps.setInt(2, 2);
             ResultSet rs = ps.executeQuery();
@@ -140,7 +140,7 @@ public class mp150608_TransactionOperations implements TransactionOperations {
     @Override
     public BigDecimal getAmmountThatBuyerPayedForOrder(int orderId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where ORDER_ID = ? and TYPE = ?");
+            PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where ORDER_ID = ? and [TYPE] = ?");
             ps.setInt(1, orderId);
             ps.setInt(2, 1);
             ResultSet rs = ps.executeQuery();
@@ -156,7 +156,7 @@ public class mp150608_TransactionOperations implements TransactionOperations {
     @Override
     public BigDecimal getAmmountThatShopRecievedForOrder(int shopId, int orderId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where ORDER_ID = ? and RECEIVER = ? and TYPE = ?");
+            PreparedStatement ps = c.prepareStatement("select * from [TRANSACTION] where ORDER_ID = ? and RECEIVER = ? and [TYPE] = ?");
             ps.setInt(1, orderId);
             ps.setInt(2, shopId);
             ps.setInt(3, 2);
