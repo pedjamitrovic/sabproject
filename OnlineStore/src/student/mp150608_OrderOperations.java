@@ -1,13 +1,14 @@
 package student;
 
 import operations.OrderOperations;
+import student.dijkstra.Graph;
+import student.dijkstra.Pair;
+import student.dijkstra.Vertex;
 
 import java.math.BigDecimal;
 import java.sql.*;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.LinkedList;
-import java.util.List;
+import java.sql.Date;
+import java.util.*;
 
 public class mp150608_OrderOperations implements OrderOperations {
     @Override
@@ -121,6 +122,8 @@ public class mp150608_OrderOperations implements OrderOperations {
             ResultSet rs = ps.executeQuery();
             Date executionTime = null;
             if (rs.next()) executionTime = rs.getDate("CURRENT_DATE");
+
+            createTravelPathsForOrderItems(c, orderId, rsCheckBuyerCredit.getInt("CITY_ID"));
 
             ps = c.prepareStatement("insert into [TRANSACTION] values(?, ?, ?, ?, ?, ?)");
             ps.setInt(1, 1);
@@ -251,5 +254,95 @@ public class mp150608_OrderOperations implements OrderOperations {
     @Override
     public int getLocation(int orderId) {
         return 0;
+    }
+
+    private void createTravelPathsForOrderItems(Connection c, int orderId, int buyerCityId) throws SQLException {
+        Graph g = new Graph();
+        createVertices(c, g);
+        createEdges(c, g);
+
+        Map<String, Line> lines = getLines(c);
+
+        Map<Vertex, Integer> distances = g.getShortestDistances(buyerCityId);
+
+        int minDistance = Integer.MAX_VALUE;
+        int closestCityWithShop = -1;
+        Iterator<Map.Entry<Vertex, Integer>> distanceIterator = distances.entrySet().iterator();
+        while(distanceIterator.hasNext()){
+            Map.Entry<Vertex, Integer> entry = distanceIterator.next();
+            if(shopCities.contains(entry.getKey().id) && entry.getValue() < minDistance) closestCityWithShop = entry.getKey().id;
+        }
+        if(closestCityWithShop == -1) throw new RuntimeException("shopCities is empty.");
+
+        Pair<LinkedList<Vertex>, Integer> buyerToShopPath = g.findShortestPath(buyerCityId, closestCityWithShop);
+
+        Calendar assemblyDate = getCurrentDate();
+        int maxNumOfDays = Integer.MIN_VALUE;
+
+        Iterator<Integer> cityIterator = shopCities.iterator();
+        while(cityIterator.hasNext()){
+            Calendar currentDate = today;
+            Integer currentCity = cityIterator.next();
+            if(closestCityWithShop == currentCity) continue;
+            Pair<LinkedList<Vertex>, Integer> path = g.findShortestPath(closestCityWithShop, currentCity);
+            ArrayList<Vertex> vertices = new ArrayList<>(path.first);
+            int numOfDays = 0;
+            for(int i = 0; i < vertices.size() - 1; i++){
+                Line line = lines.get(Line.getHashKey(vertices.get(i).id, vertices.get(i+1).id));
+                numOfDays += line.distance;
+            }
+            if (numOfDays > maxNumOfDays) maxNumOfDays = numOfDays;
+        }
+        
+        assemblyDate.add(Calendar.DATE, maxNumOfDays);
+    }
+
+    private void createVertices(Connection c, Graph g) throws SQLException{
+        PreparedStatement ps = c.prepareStatement("select * from [CITY]");
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()){
+            g.createVertex(rs.getInt("ID"));
+        }
+    }
+
+    private void createEdges(Connection c, Graph g) throws SQLException{
+        PreparedStatement ps = c.prepareStatement("select * from [LINE]");
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()){
+            g.createEdge(rs.getInt("CITY_ID1"), rs.getInt("CITY_ID2"), rs.getInt("DISTANCE"));
+        }
+    }
+
+    private Map<String, Line> getLines(Connection c) throws SQLException{
+        Map<String, Line> lines = new HashMap<>();
+        PreparedStatement ps = c.prepareStatement("select * from [LINE]");
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()){
+            Line line = new Line(rs.getInt("ID"),
+                    rs.getInt("CITY_ID1"),
+                    rs.getInt("CITY_ID2"),
+                    rs.getInt("DISTANCE")
+            );
+            lines.put(line.getHashKey(), line);
+        }
+        return lines;
+    }
+
+    private void insertTraveling(Connection c, Line line, Calendar currentDate){
+    }
+
+    private Calendar getCurrentDate(){
+        try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
+            PreparedStatement ps = c.prepareStatement("select * from [SYSTEM]");
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                GregorianCalendar calendar = new GregorianCalendar();
+                calendar.setTime(rs.getDate("CURRENT_DATE"));
+                return calendar;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -26,7 +26,6 @@ public class Dijkstra {
         if (vertices == null || edges == null) throw new RuntimeException("Graph is not initialized.");
         this.execute(source);
         LinkedList<Vertex> path = new LinkedList<>();
-        Integer dist = 0;
         Vertex current = target;
         if (predecessors.get(current) == null) return null;
         path.add(current);
@@ -34,9 +33,17 @@ public class Dijkstra {
             current = predecessors.get(current);
             path.add(current);
         }
-        Collections.reverse(path);
+        //Collections.reverse(path);
         return new Pair(path, distance.get(target));
     }
+
+    public Map<Vertex, Integer> getDistances(Vertex source) {
+        if (vertices == null || edges == null) throw new RuntimeException("Graph is not initialized.");
+        this.execute(source);
+        LinkedList<Vertex> path = new LinkedList<>();
+        return distance;
+    }
+
 
     private void execute(Vertex source) {
         settledNodes = new HashSet<>();
@@ -97,13 +104,20 @@ public class Dijkstra {
     }
 
     public static void printSolution(Pair<LinkedList<Vertex>, Integer> path){
-        StringBuilder sb = new StringBuilder("Path: ");
+        StringBuilder sb = new StringBuilder("Path: " + System.lineSeparator());
         for (Vertex vertex : path.first) {
             sb.append(vertex.id + " -> ");
         }
         sb.delete(sb.length()-3, sb.length());
-        sb.append(System.lineSeparator());
-        sb.append("Distance: " + path.second);
+        sb.append(System.lineSeparator() + "Distance: " + path.second + System.lineSeparator());
+        System.out.print(sb.toString());
+    }
+
+    public static void printSolution(Map<Vertex, Integer> distances){
+        StringBuilder sb = new StringBuilder("Distances: " + System.lineSeparator());
+        for (Map.Entry<Vertex, Integer> entry : distances.entrySet()) {
+            sb.append(entry.getKey().id + " -> " +  entry.getValue() + System.lineSeparator());
+        }
         System.out.print(sb.toString());
     }
 }

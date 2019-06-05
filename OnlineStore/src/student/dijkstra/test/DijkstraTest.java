@@ -1,6 +1,7 @@
 package student.dijkstra.test;
 
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,12 +23,16 @@ public class DijkstraTest {
         graph.createEdge(4, 6, 2);
         graph.createEdge(5, 6, 1);
 
-        Pair<LinkedList<Vertex>, Integer> path = graph.findShortestPath(0,6);
+        Pair<LinkedList<Vertex>, Integer> path = graph.findShortestPath(0,0);
 
         Assert.assertNotNull(path);
         Assert.assertTrue(path.first.size() > 0);
 
         Dijkstra.printSolution(path); // Path: 0 -> 2 -> 3 -> 5 -> 6 Distance: 21
+
+        Map<Vertex, Integer> distances = graph.getShortestDistances(0);
+
+        Dijkstra.printSolution(distances);
 
     }
 }
