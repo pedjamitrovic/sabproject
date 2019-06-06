@@ -59,13 +59,13 @@ public class mp150608_BuyerOperations implements BuyerOperations {
     public BigDecimal increaseCredit(int buyerId, BigDecimal credit) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
             BigDecimal previousCredit = new BigDecimal(0);
-            PreparedStatement ps = c.prepareStatement("select * from BUYER where ID = ?");
+            PreparedStatement ps = c.prepareStatement("select * from [BUYER] where ID = ?");
             ps.setInt(1, buyerId);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) return null;
             else previousCredit = rs.getBigDecimal("CREDIT");
 
-            ps = c.prepareStatement("update BUYER set CREDIT = ? where ID = ?");
+            ps = c.prepareStatement("update [BUYER] set CREDIT = ? where ID = ?");
             ps.setBigDecimal(1, credit.add(previousCredit));
             ps.setInt(2, buyerId);
             if (ps.executeUpdate() == 0) return null;

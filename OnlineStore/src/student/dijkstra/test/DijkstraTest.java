@@ -23,7 +23,7 @@ public class DijkstraTest {
         graph.createEdge(4, 6, 2);
         graph.createEdge(5, 6, 1);
 
-        Pair<LinkedList<Vertex>, Integer> path = graph.findShortestPath(0,0);
+        Pair<LinkedList<Vertex>, Integer> path = graph.findShortestPath(0,6);
 
         Assert.assertNotNull(path);
         Assert.assertTrue(path.first.size() > 0);

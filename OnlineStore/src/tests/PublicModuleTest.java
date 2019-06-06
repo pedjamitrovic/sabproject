@@ -144,7 +144,7 @@ public class PublicModuleTest {
         Assert.assertNull(transactionOperations.getShopTransactionsAmmount(shopA));
         Assert.assertNull(transactionOperations.getShopTransactionsAmmount(shopC2));
         Assert.assertNull(transactionOperations.getShopTransactionsAmmount(shopC3));
-        /*Assert.assertEquals(new BigDecimal("0").setScale(3), transactionOperations.getSystemProfit());
+        Assert.assertEquals(new BigDecimal("0").setScale(3), transactionOperations.getSystemProfit());
 
         generalOperations.time(2);
         Assert.assertEquals(initialTime, orderOperations.getSentTime(order));
@@ -168,7 +168,7 @@ public class PublicModuleTest {
 
         int shopATransactionId = transactionOperations.getTransactionForShopAndOrder(order, shopA);
         Assert.assertNotEquals(-1, shopATransactionId);
-        Assert.assertEquals(receivedTime, transactionOperations.getTimeOfExecution(shopATransactionId));*/
+        Assert.assertEquals(receivedTime, transactionOperations.getTimeOfExecution(shopATransactionId));
 
     }
 

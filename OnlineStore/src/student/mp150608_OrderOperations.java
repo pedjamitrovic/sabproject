@@ -253,7 +253,35 @@ public class mp150608_OrderOperations implements OrderOperations {
 
     @Override
     public int getLocation(int orderId) {
-        return 0;
+        try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
+            PreparedStatement ps = c.prepareStatement("select * from [ORDER] where ID = ?");
+            ps.setInt(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) return -1;
+
+            if(rs.getString("STATE").equals("created")) return -1;
+            if(rs.getString("STATE").equals("arrived")){
+                ps = c.prepareStatement("select C.ID from [CITY] as C join [BUYER] as B on C.ID = B.CITY_ID where B.ID = ?");
+                ps.setInt(1, rs.getInt("BUYER_ID"));
+                rs = ps.executeQuery();
+                if (!rs.next()) return -1;
+                else return rs.getInt("ID");
+            }
+            Calendar today = getCurrentDate();
+            ps = c.prepareStatement("select * from [TRAVELING] as T join [LINE] as L on T.LINE_ID = L.ID where T.ORDER_ID = ? and T.START_DATE >= ?");
+            ps.setInt(1, orderId);
+            ps.setDate(2, new Date(today.getTimeInMillis()));
+            rs = ps.executeQuery();
+            if (rs.next()){
+                //return
+            }
+            else{
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
     private void createTravelPathsForOrderItems(Connection c, int orderId, int buyerCityId) throws SQLException {
@@ -265,12 +293,17 @@ public class mp150608_OrderOperations implements OrderOperations {
 
         Map<Vertex, Integer> distances = g.getShortestDistances(buyerCityId);
 
+        Set<Integer> shopCities = getShopsForOrder(c, orderId);
+
         int minDistance = Integer.MAX_VALUE;
         int closestCityWithShop = -1;
         Iterator<Map.Entry<Vertex, Integer>> distanceIterator = distances.entrySet().iterator();
         while(distanceIterator.hasNext()){
             Map.Entry<Vertex, Integer> entry = distanceIterator.next();
-            if(shopCities.contains(entry.getKey().id) && entry.getValue() < minDistance) closestCityWithShop = entry.getKey().id;
+            if(shopCities.contains(entry.getKey().id) && entry.getValue() < minDistance) {
+                closestCityWithShop = entry.getKey().id;
+                minDistance = entry.getValue();
+            }
         }
         if(closestCityWithShop == -1) throw new RuntimeException("shopCities is empty.");
 
@@ -280,21 +313,27 @@ public class mp150608_OrderOperations implements OrderOperations {
         int maxNumOfDays = Integer.MIN_VALUE;
 
         Iterator<Integer> cityIterator = shopCities.iterator();
-        while(cityIterator.hasNext()){
-            Calendar currentDate = today;
+        while(cityIterator.hasNext()) {
+            Calendar currentDate = assemblyDate;
             Integer currentCity = cityIterator.next();
-            if(closestCityWithShop == currentCity) continue;
+            if (closestCityWithShop == currentCity) continue;
             Pair<LinkedList<Vertex>, Integer> path = g.findShortestPath(closestCityWithShop, currentCity);
             ArrayList<Vertex> vertices = new ArrayList<>(path.first);
             int numOfDays = 0;
-            for(int i = 0; i < vertices.size() - 1; i++){
-                Line line = lines.get(Line.getHashKey(vertices.get(i).id, vertices.get(i+1).id));
+            for (int i = 0; i < vertices.size() - 1; i++) {
+                Line line = lines.get(Line.getHashKey(vertices.get(i).id, vertices.get(i + 1).id));
                 numOfDays += line.distance;
             }
             if (numOfDays > maxNumOfDays) maxNumOfDays = numOfDays;
         }
-        
+
         assemblyDate.add(Calendar.DATE, maxNumOfDays);
+        ArrayList<Vertex> vertices = new ArrayList<>(buyerToShopPath.first);
+        for (int i = 0; i < vertices.size() - 1; i++) {
+            Line line = lines.get(Line.getHashKey(vertices.get(i).id, vertices.get(i + 1).id));
+            insertTraveling(c, assemblyDate, line, orderId);
+            assemblyDate.add(Calendar.DATE, line.distance);
+        }
     }
 
     private void createVertices(Connection c, Graph g) throws SQLException{
@@ -308,9 +347,11 @@ public class mp150608_OrderOperations implements OrderOperations {
     private void createEdges(Connection c, Graph g) throws SQLException{
         PreparedStatement ps = c.prepareStatement("select * from [LINE]");
         ResultSet rs = ps.executeQuery();
-        while(rs.next()){
-            g.createEdge(rs.getInt("CITY_ID1"), rs.getInt("CITY_ID2"), rs.getInt("DISTANCE"));
-        }
+        try {
+            while (rs.next()) {
+                g.createEdge(rs.getInt("CITY_ID1"), rs.getInt("CITY_ID2"), rs.getInt("DISTANCE"));
+            }
+        }catch(Exception e) {e.printStackTrace();}
     }
 
     private Map<String, Line> getLines(Connection c) throws SQLException{
@@ -328,7 +369,25 @@ public class mp150608_OrderOperations implements OrderOperations {
         return lines;
     }
 
-    private void insertTraveling(Connection c, Line line, Calendar currentDate){
+    private Set<Integer> getShopsForOrder(Connection c, int orderId) throws SQLException{
+        HashSet<Integer> shops = new HashSet<>();
+        PreparedStatement ps = c.prepareStatement("select distinct(S.CITY_ID) from [SHOP] as S join\n" +
+                "                (select A.SHOP_ID from [ORDER_ITEM] as OI join [ARTICLE] as A\n" +
+                "                        on OI.ARTICLE_ID = A.ID) as AOI\n" +
+                "        on AOI.SHOP_ID = S.ID");
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()){
+            shops.add(rs.getInt("CITY_ID"));
+        }
+        return shops;
+    }
+
+    private void insertTraveling(Connection c, Calendar currentDate, Line line, int orderId) throws SQLException{
+        PreparedStatement ps = c.prepareStatement("insert into [TRAVELING] values(?, ?, ?)");
+        ps.setDate(1, new Date(currentDate.getTimeInMillis()));
+        ps.setInt(2, line.id);
+        ps.setInt(3, orderId);
+        if (ps.executeUpdate() == 0) throw new SQLException("Couldn't insert traveling.");
     }
 
     private Calendar getCurrentDate(){

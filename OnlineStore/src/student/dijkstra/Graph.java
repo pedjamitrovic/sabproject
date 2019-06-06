@@ -22,22 +22,22 @@ public class Graph {
     }
 
     public void createEdge(int source, int destination, int weight) {
-        Edge edge = new Edge(vertices.get(source), vertices.get(destination), weight);
+        Edge edge = new Edge(vertices.get(source - 1), vertices.get(destination - 1), weight);
         edges.add(edge);
-        edge = new Edge(vertices.get(destination), vertices.get(source), weight);
+        edge = new Edge(vertices.get(destination - 1), vertices.get(source - 1), weight);
         edges.add(edge);
     }
 
     public Pair<LinkedList<Vertex>, Integer> findShortestPath(int source, int destination){
         initNeighbours();
         Dijkstra dijkstra = new Dijkstra(this);
-        return dijkstra.getPath(vertices.get(source), vertices.get(destination));
+        return dijkstra.getPath(vertices.get(source - 1), vertices.get(destination - 1));
     }
 
     public Map<Vertex, Integer> getShortestDistances(int source) {
         initNeighbours();
         Dijkstra dijkstra = new Dijkstra(this);
-        return dijkstra.getDistances(vertices.get(source));
+        return dijkstra.getDistances(vertices.get(source - 1));
     }
 
     private void initNeighbours(){
