@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="819431f9-9a47-4b8c-918f-33bc720d060f" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/src/student/dijkstra/Graph.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/student/dijkstra/Graph.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/student/dijkstra/test/DijkstraTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/student/dijkstra/test/DijkstraTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/student/mp150608_BuyerOperations.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/student/mp150608_BuyerOperations.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/student/mp150608_CityOperations.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/student/mp150608_CityOperations.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SAB_domaci_2019_student/META-INF/SAB_domaci_2019_student.kotlin_module" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/student/mp150608_OrderOperations.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/student/mp150608_OrderOperations.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/student/mp150608_TransactionOperations.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/student/mp150608_TransactionOperations.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/tests/PublicModuleTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/tests/PublicModuleTest.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -18,11 +17,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/student/mp150608_OrderOperations.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="233">
-              <caret line="275" column="18" selection-start-line="275" selection-start-column="18" selection-end-line="275" selection-end-column="18" />
+            <state relative-caret-position="-799">
+              <caret line="103" column="77" lean-forward="true" selection-start-line="103" selection-start-column="77" selection-end-line="103" selection-end-column="77" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -33,8 +32,38 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/tests/PublicModuleTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="114">
-              <caret line="151" selection-start-line="151" selection-end-line="151" />
+            <state relative-caret-position="132">
+              <caret line="162" selection-start-line="162" selection-end-line="162" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/student/mp150608_TransactionOperations.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="276">
+              <caret line="206" column="25" selection-start-line="206" selection-start-column="25" selection-end-line="206" selection-end-column="25" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/operations/TransactionOperations.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="320">
+              <caret line="85" column="15" selection-start-line="85" selection-start-column="15" selection-end-line="85" selection-end-column="15" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$APPLICATION_HOME_DIR$/lib/junit-4.12.jar!/org/junit/internal/runners/model/ReflectiveCallable.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="238">
+              <caret line="17" selection-start-line="17" selection-end-line="17" />
             </state>
           </provider>
         </entry>
@@ -42,7 +71,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/operations/CityOperations.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-289">
+            <state relative-caret-position="68">
               <caret line="4" column="17" selection-start-line="4" selection-start-column="17" selection-end-line="4" selection-end-column="17" />
             </state>
           </provider>
@@ -51,8 +80,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/operations/OrderOperations.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-518">
-              <caret line="44" column="15" selection-start-line="44" selection-start-column="15" selection-end-line="44" selection-end-column="15" />
+            <state relative-caret-position="412">
+              <caret line="89" column="8" selection-start-line="89" selection-start-column="8" selection-end-line="89" selection-end-column="8" />
             </state>
           </provider>
         </entry>
@@ -60,20 +89,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/student/mp150608_GeneralOperations.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="127">
+            <state relative-caret-position="408">
               <caret line="28" column="42" selection-start-line="28" selection-start-column="38" selection-end-line="28" selection-end-column="42" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/student/mp150608_CityOperations.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="113">
-              <caret line="88" column="20" lean-forward="true" selection-start-line="88" selection-start-column="20" selection-end-line="88" selection-end-column="20" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -98,6 +115,8 @@
       <find>nodes</find>
       <find>getMinimum</find>
       <find>update</find>
+      <find>SP_SYSTEM_TRANSACTIONS</find>
+      <find>getSystemProfit</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -128,7 +147,6 @@
         <option value="$PROJECT_DIR$/src/student/mp150608_GeneralOperations.java" />
         <option value="$PROJECT_DIR$/src/student/mp150608_ShopOperations.java" />
         <option value="$PROJECT_DIR$/src/student/Settings.java" />
-        <option value="$PROJECT_DIR$/src/student/mp150608_TransactionOperations.java" />
         <option value="$PROJECT_DIR$/src/student/dijkstra/Vertex.java" />
         <option value="$PROJECT_DIR$/src/student/dijkstra/Edge.java" />
         <option value="$PROJECT_DIR$/src/student/dijkstra/Pair.java" />
@@ -138,9 +156,10 @@
         <option value="$PROJECT_DIR$/src/student/dijkstra/test/DijkstraTest.java" />
         <option value="$PROJECT_DIR$/src/student/mp150608_BuyerOperations.java" />
         <option value="$PROJECT_DIR$/src/student/dijkstra/Graph.java" />
-        <option value="$PROJECT_DIR$/src/tests/PublicModuleTest.java" />
-        <option value="$PROJECT_DIR$/src/student/mp150608_OrderOperations.java" />
         <option value="$PROJECT_DIR$/src/student/mp150608_CityOperations.java" />
+        <option value="$PROJECT_DIR$/src/student/mp150608_OrderOperations.java" />
+        <option value="$PROJECT_DIR$/src/student/mp150608_TransactionOperations.java" />
+        <option value="$PROJECT_DIR$/src/tests/PublicModuleTest.java" />
       </list>
     </option>
   </component>
@@ -165,7 +184,6 @@
     </navigator>
     <panes>
       <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -200,6 +218,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -208,7 +227,7 @@
     <property name="Repository.Attach.Sources" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1559860158196" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1559866071727" />
     <property name="last_opened_file_path" value="C:/Program Files/Microsoft JDBC Driver 7.2 for SQL Server/sqljdbc_7.2/enu/mssql-jdbc-7.2.2.jre8.jar!/" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -346,9 +365,8 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16979866" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17181209" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -357,8 +375,8 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.09490085" />
-      <window_info anchor="bottom" id="Debug" order="3" visible="true" weight="0.3512748" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.21104816" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.28611898" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -381,18 +399,6 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/tests/PublicModuleTest.java</url>
-          <line>151</line>
-          <properties />
-          <option name="timeStamp" value="47" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">
@@ -658,13 +664,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/junit-4.12.jar!/org/junit/internal/runners/model/ReflectiveCallable.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="16" selection-start-line="16" selection-end-line="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/Program Files/Microsoft JDBC Driver 7.2 for SQL Server/sqljdbc_7.2/enu/mssql-jdbc-7.2.2.jre8.jar!/com/microsoft/sqlserver/jdbc/SQLServerStatement.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="231">
@@ -693,27 +692,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/operations/TransactionOperations.java">
+    <entry file="file://$PROJECT_DIR$/src/student/mp150608_CityOperations.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="478">
-          <caret line="85" column="15" selection-start-line="85" selection-start-column="15" selection-end-line="85" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/student/mp150608_TransactionOperations.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="196" column="65" selection-start-line="196" selection-start-column="65" selection-end-line="196" selection-end-column="65" />
+        <state relative-caret-position="-187">
+          <caret line="52" column="34" selection-start-line="52" selection-start-column="34" selection-end-line="52" selection-end-column="34" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/student/mp150608_OrderOperations.java">
+    <entry file="file://$PROJECT_DIR$/src/operations/CityOperations.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="233">
-          <caret line="275" column="18" selection-start-line="275" selection-start-column="18" selection-end-line="275" selection-end-column="18" />
+        <state relative-caret-position="68">
+          <caret line="4" column="17" selection-start-line="4" selection-start-column="17" selection-end-line="4" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/student/mp150608_GeneralOperations.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="28" column="42" selection-start-line="28" selection-start-column="38" selection-end-line="28" selection-end-column="42" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -722,39 +721,53 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/operations/OrderOperations.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-518">
-          <caret line="44" column="15" selection-start-line="44" selection-start-column="15" selection-end-line="44" selection-end-column="15" />
+        <state relative-caret-position="412">
+          <caret line="89" column="8" selection-start-line="89" selection-start-column="8" selection-end-line="89" selection-end-column="8" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/tests/PublicModuleTest.java">
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/junit-4.12.jar!/org/junit/internal/runners/model/ReflectiveCallable.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="151" selection-start-line="151" selection-end-line="151" />
+        <state relative-caret-position="238">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/operations/CityOperations.java">
+    <entry file="jar://C:/Program Files/Microsoft JDBC Driver 7.2 for SQL Server/sqljdbc_7.2/enu/mssql-jdbc-7.2.2.jre8.jar!/com/microsoft/sqlserver/jdbc/SQLServerConnection.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-289">
-          <caret line="4" column="17" selection-start-line="4" selection-start-column="17" selection-end-line="4" selection-end-column="17" />
+        <state relative-caret-position="210">
+          <caret line="2148" selection-start-line="2148" selection-end-line="2148" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/student/mp150608_GeneralOperations.java">
+    <entry file="file://$PROJECT_DIR$/src/operations/TransactionOperations.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="127">
-          <caret line="28" column="42" selection-start-line="28" selection-start-column="38" selection-end-line="28" selection-end-column="42" />
+        <state relative-caret-position="320">
+          <caret line="85" column="15" selection-start-line="85" selection-start-column="15" selection-end-line="85" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/student/mp150608_TransactionOperations.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="206" column="25" selection-start-line="206" selection-start-column="25" selection-end-line="206" selection-end-column="25" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/student/mp150608_CityOperations.java">
+    <entry file="file://$PROJECT_DIR$/src/tests/PublicModuleTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="113">
-          <caret line="88" column="20" lean-forward="true" selection-start-line="88" selection-start-column="20" selection-end-line="88" selection-end-column="20" />
+        <state relative-caret-position="132">
+          <caret line="162" selection-start-line="162" selection-end-line="162" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/student/mp150608_OrderOperations.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-799">
+          <caret line="103" column="77" lean-forward="true" selection-start-line="103" selection-start-column="77" selection-end-line="103" selection-end-column="77" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

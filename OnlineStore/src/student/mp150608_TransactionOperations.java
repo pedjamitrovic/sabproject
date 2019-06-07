@@ -194,10 +194,19 @@ public class mp150608_TransactionOperations implements TransactionOperations {
     @Override
     public BigDecimal getSystemProfit() {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            CallableStatement cs = c.prepareCall("{? = call CALC_SYSTEM_PROFIT()}");
-            cs.registerOutParameter(1, Types.DECIMAL);
-            cs.execute();
-            return cs.getBigDecimal(1).setScale(3);
+            PreparedStatement ps = c.prepareStatement("select * from [ORDER] where STATE = ?");
+            ps.setString(1,"arrived");
+            ResultSet rs = ps.executeQuery();
+            CallableStatement cs = c.prepareCall("{call SP_SYSTEM_TRANSACTIONS(?, ?, ?)}");
+            cs.registerOutParameter(2, Types.DECIMAL);
+            cs.registerOutParameter(3, Types.DECIMAL);
+            BigDecimal profit =  new BigDecimal(0).setScale(3);
+            while(rs.next()){
+                cs.setInt(1, rs.getInt("ID"));
+                cs.execute();
+                profit = profit.add(cs.getBigDecimal(3).setScale(3));
+            }
+            return profit;
         } catch (SQLException e) {
             e.printStackTrace();
         }

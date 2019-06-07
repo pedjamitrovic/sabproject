@@ -221,13 +221,13 @@ public class mp150608_OrderOperations implements OrderOperations {
     @Override
     public Calendar getRecievedTime(int orderId) {
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            PreparedStatement ps = c.prepareStatement("select * from [ORDER] where ID = ?");
+            PreparedStatement ps = c.prepareStatement("select * from [ORDER] where ID = ? and RECEIVED_time is not null");
             ps.setInt(1, orderId);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) return null;
             else {
                 GregorianCalendar calendar = new GregorianCalendar();
-                calendar.setTime(rs.getDate("RECIEVED_TIME"));
+                calendar.setTime(rs.getDate("RECEIVED_TIME"));
                 return calendar;
             }
         } catch (SQLException e) {
@@ -261,22 +261,28 @@ public class mp150608_OrderOperations implements OrderOperations {
 
             if(rs.getString("STATE").equals("created")) return -1;
             if(rs.getString("STATE").equals("arrived")){
-                ps = c.prepareStatement("select C.ID from [CITY] as C join [BUYER] as B on C.ID = B.CITY_ID where B.ID = ?");
-                ps.setInt(1, rs.getInt("BUYER_ID"));
-                rs = ps.executeQuery();
-                if (!rs.next()) return -1;
-                else return rs.getInt("ID");
+                return getBuyerCityId(c, orderId);
             }
             Calendar today = getCurrentDate();
-            ps = c.prepareStatement("select * from [TRAVELING] as T join [LINE] as L on T.LINE_ID = L.ID where T.ORDER_ID = ? and T.START_DATE >= ?");
+            ps = c.prepareStatement("select top(1) * from [TRAVELING] as T join [LINE] as L on T.LINE_ID = L.ID where T.ORDER_ID = ? and T.START_DATE <= ? order by [START_DATE] desc");
             ps.setInt(1, orderId);
             ps.setDate(2, new Date(today.getTimeInMillis()));
             rs = ps.executeQuery();
             if (rs.next()){
-                //return
+                if (rs.getInt("DIRECTION") == 0) return rs.getInt("CITY_ID1");
+                else return rs.getInt("CITY_ID2");
             }
             else{
-
+                ps = c.prepareStatement("select top(1) * from [TRAVELING] as T join [LINE] as L on T.LINE_ID = L.ID where T.ORDER_ID = ? order by [START_DATE] asc");
+                ps.setInt(1, orderId);
+                rs = ps.executeQuery();
+                if(rs.next()){
+                    if (rs.getInt("DIRECTION") == 0) return rs.getInt("CITY_ID1");
+                    else return rs.getInt("CITY_ID2");
+                }
+                else{
+                    return getBuyerCityId(c, orderId);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -330,8 +336,13 @@ public class mp150608_OrderOperations implements OrderOperations {
         assemblyDate.add(Calendar.DATE, maxNumOfDays);
         ArrayList<Vertex> vertices = new ArrayList<>(buyerToShopPath.first);
         for (int i = 0; i < vertices.size() - 1; i++) {
-            Line line = lines.get(Line.getHashKey(vertices.get(i).id, vertices.get(i + 1).id));
-            insertTraveling(c, assemblyDate, line, orderId);
+            int from = vertices.get(i).id;
+            int to = vertices.get(i + 1).id;
+            Line line = lines.get(Line.getHashKey(from, to));
+            int direction;
+            if (line.firstCity == from) direction = 0;
+            else direction = 1;
+            insertTraveling(c, assemblyDate, line, direction, orderId);
             assemblyDate.add(Calendar.DATE, line.distance);
         }
     }
@@ -382,11 +393,12 @@ public class mp150608_OrderOperations implements OrderOperations {
         return shops;
     }
 
-    private void insertTraveling(Connection c, Calendar currentDate, Line line, int orderId) throws SQLException{
-        PreparedStatement ps = c.prepareStatement("insert into [TRAVELING] values(?, ?, ?)");
+    private void insertTraveling(Connection c, Calendar currentDate, Line line, int direction, int orderId) throws SQLException{
+        PreparedStatement ps = c.prepareStatement("insert into [TRAVELING] values(?, ?, ?, ?)");
         ps.setDate(1, new Date(currentDate.getTimeInMillis()));
         ps.setInt(2, line.id);
         ps.setInt(3, orderId);
+        ps.setInt(4, direction);
         if (ps.executeUpdate() == 0) throw new SQLException("Couldn't insert traveling.");
     }
 
@@ -403,5 +415,13 @@ public class mp150608_OrderOperations implements OrderOperations {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private int getBuyerCityId(Connection c, int buyerId) throws SQLException{
+        PreparedStatement ps = c.prepareStatement("select C.ID from [CITY] as C join [BUYER] as B on C.ID = B.CITY_ID where B.ID = ?");
+        ps.setInt(1, buyerId);
+        ResultSet rs = ps.executeQuery();
+        if (!rs.next()) return -1;
+        else return rs.getInt("ID");
     }
 }

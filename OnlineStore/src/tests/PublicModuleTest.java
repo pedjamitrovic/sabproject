@@ -164,7 +164,9 @@ public class PublicModuleTest {
         Assert.assertEquals(shopAAmountReal, transactionOperations.getShopTransactionsAmmount(shopA));
         Assert.assertEquals(shopC2AmountReal, transactionOperations.getShopTransactionsAmmount(shopC2));
         Assert.assertEquals(shopC3AmountReal, transactionOperations.getShopTransactionsAmmount(shopC3));
-        Assert.assertEquals(systemProfit, transactionOperations.getSystemProfit());
+
+        BigDecimal x = transactionOperations.getSystemProfit();
+        Assert.assertEquals(systemProfit, x);
 
         int shopATransactionId = transactionOperations.getTransactionForShopAndOrder(order, shopA);
         Assert.assertNotEquals(-1, shopATransactionId);
