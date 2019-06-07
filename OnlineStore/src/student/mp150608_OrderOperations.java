@@ -20,23 +20,26 @@ public class mp150608_OrderOperations implements OrderOperations {
             ResultSet rsCheckOrderValidity = psCheckOrderValidity.executeQuery();
             if (!rsCheckOrderValidity.next()) return -1;
             int articleQuantity = -1;
-            PreparedStatement ps = c.prepareStatement("select * from ARTICLE where ID = ?", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            int discount = -1;
+            PreparedStatement ps = c.prepareStatement("select * from ARTICLE join SHOP on ARTICLE.SHOP_ID = SHOP.ID where ARTICLE.ID = ?", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             ps.setInt(1, articleId);
             ResultSet rsArticle = ps.executeQuery();
             if (!rsArticle.next()) return -1;
             else{
                 articleQuantity = rsArticle.getInt("QUANTITY");
                 if(articleQuantity < count) return -1;
+                discount = rsArticle.getInt("DISCOUNT");
             }
             ps = c.prepareStatement("select * from ORDER_ITEM where ORDER_ID = ? and ARTICLE_ID = ?", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             ps.setInt(1, orderId);
             ps.setInt(2, articleId);
             ResultSet rsOrderItem = ps.executeQuery();
             if(!rsOrderItem.next()){
-                ps = c.prepareStatement("insert into ORDER_ITEM values(?,?,?)", Statement.RETURN_GENERATED_KEYS);
+                ps = c.prepareStatement("insert into ORDER_ITEM values(?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
                 ps.setInt(1, orderId);
                 ps.setInt(2, articleId);
                 ps.setInt(3, count);
+                ps.setInt(4, discount);
                 if (ps.executeUpdate() == 0) return -1;
                 rsArticle.updateInt("QUANTITY", articleQuantity - count);
                 rsArticle.updateRow();
