@@ -191,13 +191,12 @@ public class mp150608_OrderOperations implements OrderOperations {
 
             createTravelPathsForOrderItems(c, orderId, rsCheckBuyerCredit.getInt("CITY_ID"));
 
-            ps = c.prepareStatement("insert into [TRANSACTION] values(?, ?, ?, ?, ?, ?)");
+            ps = c.prepareStatement("insert into [TRANSACTION] values(?, ?, null, ?, ?, ?)");
             ps.setInt(1, 1);
             ps.setInt(2, buyerId);
-            ps.setInt(3, -1);
-            ps.setDate(4, executionTime);
-            ps.setBigDecimal(5, orderPrice);
-            ps.setInt(6, orderId);
+            ps.setDate(3, executionTime);
+            ps.setBigDecimal(4, orderPrice);
+            ps.setInt(5, orderId);
             if (ps.executeUpdate() == 0) {
                 c.rollback();
                 return -1;
@@ -341,7 +340,7 @@ public class mp150608_OrderOperations implements OrderOperations {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            ps = c.prepareStatement("select * from [ORDER] where ID = ? and RECEIVED_time is not null");
+            ps = c.prepareStatement("select * from [ORDER] where ID = ? and RECEIVED_TIME is not null");
             ps.setInt(1, orderId);
             rs = ps.executeQuery();
             if (!rs.next()) return null;
@@ -405,6 +404,12 @@ public class mp150608_OrderOperations implements OrderOperations {
             if(rs.getString("STATE").equals("arrived")){
                 return getBuyerCityId(c, orderId);
             }
+
+            ps = c.prepareStatement("select * from [TRAVELING] where ORDER_ID = ?");
+            ps.setInt(1, orderId);
+            rs = ps.executeQuery();
+            if (!rs.next()) return getBuyerCityId(c, orderId);
+
             Calendar today = getCurrentDate();
             ps = c.prepareStatement("select top(1) * from [TRAVELING] as T join [LINE] as L on T.LINE_ID = L.ID where T.ORDER_ID = ? and T.START_DATE <= ? order by [START_DATE] desc");
             ps.setInt(1, orderId);
@@ -467,7 +472,7 @@ public class mp150608_OrderOperations implements OrderOperations {
         Pair<LinkedList<Vertex>, Integer> buyerToShopPath = g.findShortestPath(buyerCityId, closestCityWithShop);
 
         Calendar assemblyDate = getCurrentDate();
-        int maxNumOfDays = Integer.MIN_VALUE;
+        int maxNumOfDays = 0;
 
         Iterator<Integer> cityIterator = shopCities.iterator();
         while(cityIterator.hasNext()) {
@@ -485,6 +490,14 @@ public class mp150608_OrderOperations implements OrderOperations {
         }
 
         assemblyDate.add(Calendar.DATE, maxNumOfDays);
+
+        PreparedStatement ps = c.prepareStatement("update [ORDER] set ASSEMBLY_TIME = ? where ID = ?");
+        ps.setDate(1, new Date(assemblyDate.getTimeInMillis()));
+        ps.setInt(2, orderId);
+        if (ps.executeUpdate() == 0) throw new RuntimeException("Execute update returned 0 updated rows.");
+
+        if(buyerCityId == closestCityWithShop) return;
+
         ArrayList<Vertex> vertices = new ArrayList<>(buyerToShopPath.first);
         for (int i = 0; i < vertices.size() - 1; i++) {
             int from = vertices.get(i).id;
@@ -534,16 +547,19 @@ public class mp150608_OrderOperations implements OrderOperations {
 
     private Set<Integer> getShopsForOrder(Connection c, int orderId) throws SQLException{
         try (PreparedStatement ps = c.prepareStatement("select distinct(S.CITY_ID) from [SHOP] as S join\n" +
-                "                (select A.SHOP_ID from [ORDER_ITEM] as OI join [ARTICLE] as A\n" +
-                "                        on OI.ARTICLE_ID = A.ID) as AOI\n" +
-                "        on AOI.SHOP_ID = S.ID");
-             ResultSet rs = ps.executeQuery())
+                "(select A.SHOP_ID, OI.ORDER_ID from [ORDER_ITEM] as OI join [ARTICLE] as A\n" +
+                "on OI.ARTICLE_ID = A.ID) as AOI\n" +
+                "on AOI.SHOP_ID = S.ID\n" +
+                "where AOI.ORDER_ID = ?"))
         {
-            HashSet<Integer> shops = new HashSet<>();
-            while(rs.next()){
-                shops.add(rs.getInt("CITY_ID"));
+            ps.setInt(1, orderId);
+            try (ResultSet rs = ps.executeQuery()){
+                HashSet<Integer> shops = new HashSet<>();
+                while(rs.next()){
+                    shops.add(rs.getInt("CITY_ID"));
+                }
+                return shops;
             }
-            return shops;
         }
     }
 
@@ -584,13 +600,13 @@ public class mp150608_OrderOperations implements OrderOperations {
         return null;
     }
 
-    private int getBuyerCityId(Connection c, int buyerId) throws SQLException{
-        try (PreparedStatement ps = c.prepareStatement("select C.ID from [CITY] as C join [BUYER] as B on C.ID = B.CITY_ID where B.ID = ?"))
+    private int getBuyerCityId(Connection c, int orderId) throws SQLException{
+        try (PreparedStatement ps = c.prepareStatement("select B.CITY_ID from [ORDER] as O join [BUYER] as B on O.BUYER_ID = B.ID where O.ID = ?"))
         {
-            ps.setInt(1, buyerId);
+            ps.setInt(1, orderId);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) return -1;
-            else return rs.getInt("ID");
+            else return rs.getInt("CITY_ID");
         }
     }
 }

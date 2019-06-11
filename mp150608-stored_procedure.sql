@@ -25,6 +25,7 @@ begin
 	declare @discount int;
 	declare @quantity int;
 	declare @d decimal(10,3);
+	declare @buyer int;
 
 	set @c = cursor for (select A.PRICE, OI.DISCOUNT, OI.QUANTITY from 
 	(select [ARTICLE].ID, [ARTICLE].PRICE, [SHOP].DISCOUNT from [ARTICLE] join [SHOP] on [ARTICLE].SHOP_ID = [SHOP].ID) as A 
@@ -45,17 +46,15 @@ begin
 	
 	declare @until datetime;
 	declare @from datetime;
-	select @until = [CURRENT_DATE] from [SYSTEM];
+	select @until = SENT_TIME, @buyer = BUYER_ID from [ORDER] where ID = @order_id;
+	if(@until is null) select @until = [CURRENT_DATE] from [SYSTEM];
 	set @from = dateadd(day, -30, @until);
-
-	declare @buyer int;
-	select @buyer = BUYER_ID from [ORDER] where ID = @order_id;
 
 	declare @recentPurchaseAmount decimal;
 
 	set @recentPurchaseAmount = 0;
 	select @recentPurchaseAmount = sum(AMOUNT) from [TRANSACTION] 
-	where [TYPE] = 1 and ORDER_ID <> @order_id and SENDER = @buyer and EXECUTION_TIME BETWEEN @from AND @until
+	where [TYPE] = 1 and ORDER_ID < @order_id and SENDER = @buyer and EXECUTION_TIME BETWEEN @from AND @until
 
 	if(@recentPurchaseAmount >= 10000.000) set @final_price = @final_price * 0.98;
 
@@ -75,6 +74,7 @@ begin
 	declare @d decimal(10,3);
 	declare @final_price decimal(10, 3);
 	declare @total_sum decimal(10, 3);
+	declare @buyer int;
 
 	set @c = cursor for (select A.PRICE, OI.DISCOUNT, OI.QUANTITY from 
 	(select [ARTICLE].ID, [ARTICLE].PRICE, [SHOP].DISCOUNT from [ARTICLE] join [SHOP] on [ARTICLE].SHOP_ID = [SHOP].ID) as A 
@@ -97,17 +97,15 @@ begin
 	
 	declare @until datetime;
 	declare @from datetime;
-	select @until = [CURRENT_DATE] from [SYSTEM];
+	select @until = SENT_TIME, @buyer = BUYER_ID from [ORDER] where ID = @order_id;
+	if(@until is null) select @until = [CURRENT_DATE] from [SYSTEM];
 	set @from = dateadd(day, -30, @until);
-
-	declare @buyer int;
-	select @buyer = BUYER_ID from [ORDER] where ID = @order_id;
 
 	declare @recentPurchaseAmount decimal;
 
 	set @recentPurchaseAmount = 0;
 	select @recentPurchaseAmount = sum(AMOUNT) from [TRANSACTION] 
-	where [TYPE] = 1 and ORDER_ID <> @order_id and SENDER = @buyer and EXECUTION_TIME BETWEEN @from AND @until
+	where [TYPE] = 1 and ORDER_ID < @order_id and SENDER = @buyer and EXECUTION_TIME BETWEEN @from AND @until
 
 	if(@recentPurchaseAmount >= 10000.000) set @final_price = @final_price * 0.98;
 
@@ -127,6 +125,7 @@ begin
 	declare @discount int;
 	declare @quantity int;
 	declare @d decimal(10,3);
+	declare @buyer int;
 
 	set @c = cursor for (select A.PRICE, OI.DISCOUNT, OI.QUANTITY from 
 	(select [ARTICLE].ID, [ARTICLE].PRICE, [SHOP].DISCOUNT from [ARTICLE] join [SHOP] on [ARTICLE].SHOP_ID = [SHOP].ID) as A 
@@ -147,22 +146,20 @@ begin
 	
 	declare @until datetime;
 	declare @from datetime;
-	select @until = [CURRENT_DATE] from [SYSTEM];
+	select @until = SENT_TIME, @buyer = BUYER_ID from [ORDER] where ID = @order_id;
+	if(@until is null) select @until = [CURRENT_DATE] from [SYSTEM];
 	set @from = dateadd(day, -30, @until);
-
-	declare @buyer int;
-	select @buyer = BUYER_ID from [ORDER] where ID = @order_id;
 
 	declare @recentPurchaseAmount decimal;
 
 	set @recentPurchaseAmount = 0;
 	select @recentPurchaseAmount = sum(AMOUNT) from [TRANSACTION] 
-	where [TYPE] = 1 and ORDER_ID <> @order_id and SENDER = @buyer and EXECUTION_TIME BETWEEN @from AND @until
+	where [TYPE] = 1 and ORDER_ID < @order_id and SENDER = @buyer and EXECUTION_TIME BETWEEN @from AND @until
 
 	if(@recentPurchaseAmount >= 10000.000) 
 	begin
-		set @system_cut = @final_price * 0.03;
 		set @final_price = @final_price * 0.98;
+		set @system_cut = @final_price * 0.03;
 	end
 	else
 	begin

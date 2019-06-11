@@ -5,26 +5,38 @@ as
 begin
 	declare @newDate datetime;
 	declare @receivedTime datetime;
+	declare @assemblyDate datetime;
 	declare @countTraveling int;
 	declare @orderId int;
 	declare @orderCursor cursor;
 
 	select @newDate = [CURRENT_DATE] from inserted;
 
-	set @orderCursor = cursor for (select ID from [ORDER] where RECEIVED_TIME is null);
+	set @orderCursor = cursor for (select ID, ASSEMBLY_TIME from [ORDER] where RECEIVED_TIME is null);
 
 	open @orderCursor;
-	fetch next from @orderCursor into @orderId;
+	fetch next from @orderCursor into @orderId, @assemblyDate;
 
 	while @@FETCH_STATUS = 0
 	begin
-		select @countTraveling = count(*) from TRAVELING join LINE on LINE_ID = LINE.ID where [ORDER_ID] = @orderId and @newDate < dateadd(day, DISTANCE, [START_DATE]);
-		if(@countTraveling = 0) 
+		select @countTraveling = count(*) from TRAVELING where ORDER_ID = @orderId;
+		if(@countTraveling = 0)
 		begin
-			select top(1) @receivedTime = dateadd(day, DISTANCE, [START_DATE]) from [TRAVELING] T join LINE L on T.LINE_ID = L.ID order by [START_DATE] desc
-			update [ORDER] set RECEIVED_TIME = @receivedTime, [STATE] = 'arrived' where ID = @orderId and RECEIVED_TIME is null;
+			if(@newDate >= @assemblyDate)
+				begin
+					update [ORDER] set RECEIVED_TIME = @assemblyDate, [STATE] = 'arrived' where ID = @orderId;
+				end
 		end
-		fetch next from @orderCursor into @orderId;
+		else
+		begin
+			select @countTraveling = count(*) from TRAVELING join LINE on LINE_ID = LINE.ID where [ORDER_ID] = @orderId and @newDate < dateadd(day, DISTANCE, [START_DATE]);
+			if(@countTraveling = 0) 
+			begin
+				select top(1) @receivedTime = dateadd(day, DISTANCE, [START_DATE]) from [TRAVELING] T join LINE L on T.LINE_ID = L.ID where [ORDER_ID] = @orderId order by [START_DATE] desc
+				update [ORDER] set RECEIVED_TIME = @receivedTime, [STATE] = 'arrived' where ID = @orderId;
+			end
+		end
+		fetch next from @orderCursor into @orderId, @assemblyDate;
 	end
 
 	close @orderCursor;
@@ -42,6 +54,8 @@ begin
 	declare @orderId int;
 	declare @shopId int;
 	declare @payout decimal(10,3);
+	declare @factor decimal(10,3);
+	declare @recentPurchaseAmount decimal(10,3);
 	declare @receivedTime datetime;
 	
 	if update (RECEIVED_TIME) 
@@ -58,7 +72,17 @@ begin
 
 		while @@FETCH_STATUS = 0
 		begin
-			insert into [TRANSACTION] values (2, -1, @shopId, @receivedTime, @payout * 0.95, @orderId);
+			set @factor = 0.95;
+			select @recentPurchaseAmount = sum(AMOUNT) from [TRANSACTION] 
+			where [TYPE] = 1 and ORDER_ID < @orderId and SENDER = (select BUYER_ID from [ORDER] where ID = @orderId);
+			
+			if(@recentPurchaseAmount >= 10000.000) 
+			begin
+			set @payout = @payout * 0.98;
+			set @factor = 0.97;
+			end
+			
+			insert into [TRANSACTION] values (2, null, @shopId, @receivedTime, @payout * @factor, @orderId);
 
 			fetch next from @c into @shopId, @payout;
 		end

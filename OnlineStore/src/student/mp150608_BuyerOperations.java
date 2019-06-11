@@ -146,11 +146,12 @@ public class mp150608_BuyerOperations implements BuyerOperations {
         PreparedStatement ps = null;
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
             c.setAutoCommit(false);
-            ps = c.prepareStatement("insert into [ORDER] values(?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            ps = c.prepareStatement("insert into [ORDER] values(?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, "created");
             ps.setDate(2, null);
             ps.setDate(3, null);
-            ps.setInt(4, buyerId);
+            ps.setDate(4, null);
+            ps.setInt(5, buyerId);
             if (ps.executeUpdate() == 0) {
                 c.rollback();
                 throw new RuntimeException("Execute update returned 0 updated rows.");

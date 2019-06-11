@@ -1,102 +1,103 @@
-create table [ARTICLE]
+CREATE TABLE [ARTICLE]
 ( 
-	[ID]                 integer  not null  identity ( 1,1 ) ,
-	[NAME]               varchar(100)  null ,
-	[PRICE]              decimal(10,3)  null ,
-	[QUANTITY]           integer  null ,
-	[SHOP_ID]            integer  null 
+	[ID]                 integer  NOT NULL  IDENTITY ( 1,1 ) ,
+	[NAME]               varchar(100)  NULL ,
+	[PRICE]              decimal(10,3)  NULL ,
+	[QUANTITY]           integer  NULL ,
+	[SHOP_ID]            integer  NULL 
 )
 
 go
 
-create table [BUYER]
+CREATE TABLE [BUYER]
 ( 
-	[ID]                 integer  not null  identity ( 1,1 ) ,
-	[NAME]               varchar(100)  null ,
-	[CREDIT]             decimal(10,3)  null ,
-	[CITY_ID]            integer  null 
+	[ID]                 integer  NOT NULL  IDENTITY ( 1,1 ) ,
+	[NAME]               varchar(100)  NULL ,
+	[CREDIT]             decimal(10,3)  NULL ,
+	[CITY_ID]            integer  NULL 
 )
 
 go
 
-create table [CITY]
+CREATE TABLE [CITY]
 ( 
-	[ID]                 integer  not null  identity ( 1,1 ) ,
-	[NAME]               varchar(100)  null 
+	[ID]                 integer  NOT NULL  IDENTITY ( 1,1 ) ,
+	[NAME]               varchar(100)  NULL 
 )
 
 go
 
-create table [LINE]
+CREATE TABLE [LINE]
 ( 
-	[ID]                 integer  not null  identity ( 1,1 ) ,
-	[CITY_ID1]           integer  null ,
-	[CITY_ID2]           integer  null ,
-	[DISTANCE]           integer  null 
+	[ID]                 integer  NOT NULL  IDENTITY ( 1,1 ) ,
+	[CITY_ID1]           integer  NULL ,
+	[CITY_ID2]           integer  NULL ,
+	[DISTANCE]           integer  NULL 
 )
 
 go
 
-create table [ORDER]
+CREATE TABLE [ORDER]
 ( 
-	[ID]                 integer  not null  identity ( 1,1 ) ,
-	[STATE]              varchar(100)  null ,
-	[SENT_TIME]          datetime  null ,
-	[RECEIVED_TIME]      datetime  null ,
-	[BUYER_ID]           integer  null 
+	[ID]                 integer  NOT NULL  IDENTITY ( 1,1 ) ,
+	[STATE]              varchar(100)  NULL ,
+	[SENT_TIME]          datetime  NULL ,
+	[ASSEMBLY_TIME]      datetime  NULL ,
+	[RECEIVED_TIME]      datetime  NULL ,
+	[BUYER_ID]           integer  NULL 
 )
 
 go
 
-create table [ORDER_ITEM]
+CREATE TABLE [ORDER_ITEM]
 ( 
-	[ID]                 integer  not null  identity ( 1,1 ) ,
-	[ORDER_ID]           integer  not null ,
-	[ARTICLE_ID]         integer  not null ,
-	[QUANTITY]           integer  null ,
-	[DISCOUNT]           integer  null 
+	[ID]                 integer  NOT NULL  IDENTITY ( 1,1 ) ,
+	[ORDER_ID]           integer  NOT NULL ,
+	[ARTICLE_ID]         integer  NOT NULL ,
+	[QUANTITY]           integer  NULL ,
+	[DISCOUNT]           integer  NULL 
 )
 
 go
 
-create table [SHOP]
+CREATE TABLE [SHOP]
 ( 
-	[ID]                 integer  not null  identity ( 1,1 ) ,
-	[NAME]               varchar(100)  null ,
-	[CREDIT]             decimal(10,3)  null ,
-	[CITY_ID]            integer  null ,
-	[DISCOUNT]           integer  null 
+	[ID]                 integer  NOT NULL  IDENTITY ( 1,1 ) ,
+	[NAME]               varchar(100)  NULL ,
+	[CREDIT]             decimal(10,3)  NULL ,
+	[CITY_ID]            integer  NULL ,
+	[DISCOUNT]           integer  NULL 
 )
 
 go
 
-create table [SYSTEM]
+CREATE TABLE [SYSTEM]
 ( 
-	[CURRENT_DATE]       datetime  null 
+	[CURRENT_DATE]       datetime  NULL 
 )
 
 go
 
-create table [TRANSACTION]
+CREATE TABLE [TRANSACTION]
 ( 
-	[ID]                 integer  not null  identity ( 1,1 ) ,
-	[TYPE]               integer  null ,
-	[SENDER]             integer  null ,
-	[RECEIVER]           integer  null ,
-	[EXECUTION_TIME]     datetime  null ,
-	[AMOUNT]             decimal(10,3)  null ,
-	[ORDER_ID]           integer  null 
+	[ID]                 integer  NOT NULL  IDENTITY ( 1,1 ) ,
+	[TYPE]               integer  NULL ,
+	[SENDER]             integer  NULL ,
+	[RECEIVER]           integer  NULL ,
+	[EXECUTION_TIME]     datetime  NULL ,
+	[AMOUNT]             decimal(10,3)  NULL ,
+	[ORDER_ID]           integer  NULL 
 )
 
 go
 
-create table [TRAVELING]
+CREATE TABLE [TRAVELING]
 ( 
-	[ID]                 integer  not null  identity ( 1,1 ) ,
-	[START_DATE]         datetime  null ,
-	[LINE_ID]            integer  null ,
-	[ORDER_ID]           integer  null ,
-	[DIRECTION]          integer  null 
+	[ID]                 integer  NOT NULL  IDENTITY ( 1,1 ) ,
+	[START_DATE]         datetime  NULL ,
+	[LINE_ID]            integer  NULL ,
+	[ORDER_ID]           integer  NULL ,
+	[DIRECTION]          integer  NULL 
 )
 
 go
@@ -128,6 +129,7 @@ begin
 	declare @discount int;
 	declare @quantity int;
 	declare @d decimal(10,3);
+	declare @buyer int;
 
 	set @c = cursor for (select A.PRICE, OI.DISCOUNT, OI.QUANTITY from 
 	(select [ARTICLE].ID, [ARTICLE].PRICE, [SHOP].DISCOUNT from [ARTICLE] join [SHOP] on [ARTICLE].SHOP_ID = [SHOP].ID) as A 
@@ -148,17 +150,15 @@ begin
 	
 	declare @until datetime;
 	declare @from datetime;
-	select @until = [CURRENT_DATE] from [SYSTEM];
+	select @until = SENT_TIME, @buyer = BUYER_ID from [ORDER] where ID = @order_id;
+	if(@until is null) select @until = [CURRENT_DATE] from [SYSTEM];
 	set @from = dateadd(day, -30, @until);
-
-	declare @buyer int;
-	select @buyer = BUYER_ID from [ORDER] where ID = @order_id;
 
 	declare @recentPurchaseAmount decimal;
 
 	set @recentPurchaseAmount = 0;
 	select @recentPurchaseAmount = sum(AMOUNT) from [TRANSACTION] 
-	where [TYPE] = 1 and ORDER_ID <> @order_id and SENDER = @buyer and EXECUTION_TIME BETWEEN @from AND @until
+	where [TYPE] = 1 and ORDER_ID < @order_id and SENDER = @buyer and EXECUTION_TIME BETWEEN @from AND @until
 
 	if(@recentPurchaseAmount >= 10000.000) set @final_price = @final_price * 0.98;
 
@@ -178,6 +178,7 @@ begin
 	declare @d decimal(10,3);
 	declare @final_price decimal(10, 3);
 	declare @total_sum decimal(10, 3);
+	declare @buyer int;
 
 	set @c = cursor for (select A.PRICE, OI.DISCOUNT, OI.QUANTITY from 
 	(select [ARTICLE].ID, [ARTICLE].PRICE, [SHOP].DISCOUNT from [ARTICLE] join [SHOP] on [ARTICLE].SHOP_ID = [SHOP].ID) as A 
@@ -200,17 +201,15 @@ begin
 	
 	declare @until datetime;
 	declare @from datetime;
-	select @until = [CURRENT_DATE] from [SYSTEM];
+	select @until = SENT_TIME, @buyer = BUYER_ID from [ORDER] where ID = @order_id;
+	if(@until is null) select @until = [CURRENT_DATE] from [SYSTEM];
 	set @from = dateadd(day, -30, @until);
-
-	declare @buyer int;
-	select @buyer = BUYER_ID from [ORDER] where ID = @order_id;
 
 	declare @recentPurchaseAmount decimal;
 
 	set @recentPurchaseAmount = 0;
 	select @recentPurchaseAmount = sum(AMOUNT) from [TRANSACTION] 
-	where [TYPE] = 1 and ORDER_ID <> @order_id and SENDER = @buyer and EXECUTION_TIME BETWEEN @from AND @until
+	where [TYPE] = 1 and ORDER_ID < @order_id and SENDER = @buyer and EXECUTION_TIME BETWEEN @from AND @until
 
 	if(@recentPurchaseAmount >= 10000.000) set @final_price = @final_price * 0.98;
 
@@ -230,6 +229,7 @@ begin
 	declare @discount int;
 	declare @quantity int;
 	declare @d decimal(10,3);
+	declare @buyer int;
 
 	set @c = cursor for (select A.PRICE, OI.DISCOUNT, OI.QUANTITY from 
 	(select [ARTICLE].ID, [ARTICLE].PRICE, [SHOP].DISCOUNT from [ARTICLE] join [SHOP] on [ARTICLE].SHOP_ID = [SHOP].ID) as A 
@@ -250,22 +250,20 @@ begin
 	
 	declare @until datetime;
 	declare @from datetime;
-	select @until = [CURRENT_DATE] from [SYSTEM];
+	select @until = SENT_TIME, @buyer = BUYER_ID from [ORDER] where ID = @order_id;
+	if(@until is null) select @until = [CURRENT_DATE] from [SYSTEM];
 	set @from = dateadd(day, -30, @until);
-
-	declare @buyer int;
-	select @buyer = BUYER_ID from [ORDER] where ID = @order_id;
 
 	declare @recentPurchaseAmount decimal;
 
 	set @recentPurchaseAmount = 0;
 	select @recentPurchaseAmount = sum(AMOUNT) from [TRANSACTION] 
-	where [TYPE] = 1 and ORDER_ID <> @order_id and SENDER = @buyer and EXECUTION_TIME BETWEEN @from AND @until
+	where [TYPE] = 1 and ORDER_ID < @order_id and SENDER = @buyer and EXECUTION_TIME BETWEEN @from AND @until
 
 	if(@recentPurchaseAmount >= 10000.000) 
 	begin
-		set @system_cut = @final_price * 0.03;
 		set @final_price = @final_price * 0.98;
+		set @system_cut = @final_price * 0.03;
 	end
 	else
 	begin
@@ -285,26 +283,38 @@ as
 begin
 	declare @newDate datetime;
 	declare @receivedTime datetime;
+	declare @assemblyDate datetime;
 	declare @countTraveling int;
 	declare @orderId int;
 	declare @orderCursor cursor;
 
 	select @newDate = [CURRENT_DATE] from inserted;
 
-	set @orderCursor = cursor for (select ID from [ORDER] where RECEIVED_TIME is null);
+	set @orderCursor = cursor for (select ID, ASSEMBLY_TIME from [ORDER] where RECEIVED_TIME is null);
 
 	open @orderCursor;
-	fetch next from @orderCursor into @orderId;
+	fetch next from @orderCursor into @orderId, @assemblyDate;
 
 	while @@FETCH_STATUS = 0
 	begin
-		select @countTraveling = count(*) from TRAVELING join LINE on LINE_ID = LINE.ID where [ORDER_ID] = @orderId and @newDate < dateadd(day, DISTANCE, [START_DATE]);
-		if(@countTraveling = 0) 
+		select @countTraveling = count(*) from TRAVELING where ORDER_ID = @orderId;
+		if(@countTraveling = 0)
 		begin
-			select top(1) @receivedTime = dateadd(day, DISTANCE, [START_DATE]) from [TRAVELING] T join LINE L on T.LINE_ID = L.ID order by [START_DATE] desc
-			update [ORDER] set RECEIVED_TIME = @receivedTime, [STATE] = 'arrived' where ID = @orderId and RECEIVED_TIME is null;
+			if(@newDate >= @assemblyDate)
+				begin
+					update [ORDER] set RECEIVED_TIME = @assemblyDate, [STATE] = 'arrived' where ID = @orderId;
+				end
 		end
-		fetch next from @orderCursor into @orderId;
+		else
+		begin
+			select @countTraveling = count(*) from TRAVELING join LINE on LINE_ID = LINE.ID where [ORDER_ID] = @orderId and @newDate < dateadd(day, DISTANCE, [START_DATE]);
+			if(@countTraveling = 0) 
+			begin
+				select top(1) @receivedTime = dateadd(day, DISTANCE, [START_DATE]) from [TRAVELING] T join LINE L on T.LINE_ID = L.ID where [ORDER_ID] = @orderId order by [START_DATE] desc
+				update [ORDER] set RECEIVED_TIME = @receivedTime, [STATE] = 'arrived' where ID = @orderId;
+			end
+		end
+		fetch next from @orderCursor into @orderId, @assemblyDate;
 	end
 
 	close @orderCursor;
@@ -322,6 +332,8 @@ begin
 	declare @orderId int;
 	declare @shopId int;
 	declare @payout decimal(10,3);
+	declare @factor decimal(10,3);
+	declare @recentPurchaseAmount decimal(10,3);
 	declare @receivedTime datetime;
 	
 	if update (RECEIVED_TIME) 
@@ -338,7 +350,17 @@ begin
 
 		while @@FETCH_STATUS = 0
 		begin
-			insert into [TRANSACTION] values (2, -1, @shopId, @receivedTime, @payout * 0.95, @orderId);
+			set @factor = 0.95;
+			select @recentPurchaseAmount = sum(AMOUNT) from [TRANSACTION] 
+			where [TYPE] = 1 and ORDER_ID < @orderId and SENDER = (select BUYER_ID from [ORDER] where ID = @orderId);
+			
+			if(@recentPurchaseAmount >= 10000.000) 
+			begin
+			set @payout = @payout * 0.98;
+			set @factor = 0.97;
+			end
+			
+			insert into [TRANSACTION] values (2, null, @shopId, @receivedTime, @payout * @factor, @orderId);
 
 			fetch next from @c into @shopId, @payout;
 		end
