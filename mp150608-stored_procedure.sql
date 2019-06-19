@@ -158,12 +158,13 @@ begin
 
 	if(@recentPurchaseAmount >= 10000.000) 
 	begin
-		set @final_price = @final_price * 0.98;
 		set @system_cut = @final_price * 0.03;
+		set @final_price = @final_price * 0.97;
 	end
 	else
 	begin
 		set @system_cut = @final_price * 0.05;
+		set @final_price = @final_price * 0.95;
 	end
 
 	close @c;

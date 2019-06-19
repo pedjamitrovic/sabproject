@@ -15,17 +15,15 @@ public class mp150608_TransactionOperations implements TransactionOperations {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            boolean atLeastOneTransactionFound = false;
             ps = c.prepareStatement("select * from [TRANSACTION] where SENDER = ? and [TYPE] = ?");
             ps.setInt(1, buyerId);
             ps.setInt(2, 1);
             rs = ps.executeQuery();
             BigDecimal sum = new BigDecimal(0).setScale(3);
             while(rs.next()){
-                atLeastOneTransactionFound = true;
                 sum = sum.add(rs.getBigDecimal("AMOUNT").setScale(3));
             }
-            if (atLeastOneTransactionFound) return sum;
+            return sum;
         } catch (SQLException e) {
             if (e instanceof SQLException) e.printStackTrace();
         }
@@ -45,17 +43,15 @@ public class mp150608_TransactionOperations implements TransactionOperations {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try (Connection c = DriverManager.getConnection(Settings.connectionUrl)){
-            boolean atLeastOneTransactionFound = false;
             ps = c.prepareStatement("select * from [TRANSACTION] where RECEIVER = ? and [TYPE] = ?");
             ps.setInt(1, shopId);
             ps.setInt(2, 2);
             rs = ps.executeQuery();
             BigDecimal sum = new BigDecimal(0).setScale(3);
             while(rs.next()){
-                atLeastOneTransactionFound = true;
                 sum = sum.add(rs.getBigDecimal("AMOUNT").setScale(3));
             }
-            if (atLeastOneTransactionFound) return sum;
+            return sum;
         } catch (SQLException e) {
             if (e instanceof SQLException) e.printStackTrace();
         }
@@ -122,7 +118,6 @@ public class mp150608_TransactionOperations implements TransactionOperations {
         }
         return -1;
     }
-
     @Override
     public int getTransactionForShopAndOrder(int orderId, int shopId) {
         PreparedStatement ps = null;

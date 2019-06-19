@@ -262,12 +262,13 @@ begin
 
 	if(@recentPurchaseAmount >= 10000.000) 
 	begin
-		set @final_price = @final_price * 0.98;
 		set @system_cut = @final_price * 0.03;
+		set @final_price = @final_price * 0.97;
 	end
 	else
 	begin
 		set @system_cut = @final_price * 0.05;
+		set @final_price = @final_price * 0.95;
 	end
 
 	close @c;
@@ -332,7 +333,6 @@ begin
 	declare @orderId int;
 	declare @shopId int;
 	declare @payout decimal(10,3);
-	declare @factor decimal(10,3);
 	declare @recentPurchaseAmount decimal(10,3);
 	declare @receivedTime datetime;
 	
@@ -350,17 +350,7 @@ begin
 
 		while @@FETCH_STATUS = 0
 		begin
-			set @factor = 0.95;
-			select @recentPurchaseAmount = sum(AMOUNT) from [TRANSACTION] 
-			where [TYPE] = 1 and ORDER_ID < @orderId and SENDER = (select BUYER_ID from [ORDER] where ID = @orderId);
-			
-			if(@recentPurchaseAmount >= 10000.000) 
-			begin
-			set @payout = @payout * 0.98;
-			set @factor = 0.97;
-			end
-			
-			insert into [TRANSACTION] values (2, null, @shopId, @receivedTime, @payout * @factor, @orderId);
+			insert into [TRANSACTION] values (2, null, @shopId, @receivedTime, @payout * 0.95, @orderId);
 
 			fetch next from @c into @shopId, @payout;
 		end
